@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Get inputs and parse
     const pricePerUnit = parseFloat(pricePerUnitInput.value);
-    const weight = parseFloat(weightInput.value);
+    let weight = parseFloat(weightInput.value);
     const unit = unitSelect.value;
     const itemName = itemNameInput.value.trim() || 'Item';
 
@@ -30,9 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
       resultDiv.style.color = '#e74c3c'; // red
       return;
     }
-
+    
     // Calculate total price in INR
-    const totalPriceINR = pricePerUnit * weight;
+    let adjustedWeight = weight;
+    if (unit === 'g') {
+      // Convert grams to kilograms for price calculation
+      adjustedWeight = weight / 1000;
+    }
+    const totalPriceINR = pricePerUnit * adjustedWeight;
 
     // Convert INR to USD
     const totalPriceUSD = totalPriceINR / INR_TO_USD;
