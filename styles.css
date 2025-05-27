@@ -86,8 +86,8 @@ button {
 }
 
 button:hover {
-  background-color:hsl(24, 69%, 45%) ;
-  box-shadow: 0 8px 14px rgba(31, 93, 138, 0.6);
+  background-color:hsl(86, 88%, 33%) ;
+  box-shadow: 0 8px 14px rgba(248, 8, 8, 0.6);
 }
 
 .result {

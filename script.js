@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const INR_TO_USD = 82;
   let items = [];
+  let unnamedCount = 1; // Counter for unnamed items
 
   function renderItemList() {
     itemList.innerHTML = '';
@@ -57,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pricePerUnit = parseFloat(pricePerUnitInput.value);
     let weight = parseFloat(weightInput.value);
     const unit = unitSelect.value;
-    const itemName = itemNameInput.value.trim() || 'Item';
+    let itemName = itemNameInput.value.trim();
 
     // Validate inputs
     if (isNaN(pricePerUnit) || pricePerUnit <= 0) {
@@ -69,6 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
       resultDiv.textContent = 'Please enter a valid positive number for weight/quantity.';
       resultDiv.style.color = '#e74c3c';
       return;
+    }
+
+    // Assign auto-counted name if empty
+    if (!itemName) {
+      itemName = `Item ${unnamedCount++}`;
     }
 
     items.push({
@@ -100,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let totalINR = 0;
-    let summary = '';
     items.forEach(item => {
       let adjustedWeight = item.weight;
       if (item.unit === 'g') {
@@ -109,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
       // For other units, no conversion needed (ltr, doz)
       const itemTotal = item.pricePerUnit * adjustedWeight;
       totalINR += itemTotal;
-      summary += `${item.name} (${item.weight} ${item.unit}): ₹${itemTotal.toFixed(2)}\n`;
     });
 
     const totalUSD = totalINR / INR_TO_USD;
@@ -127,6 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     resultDiv.style.color = '#2c3e50';
-    resultDiv.innerHTML = `<pre>${summary}</pre><strong>Total: ${formattedINR} / ${formattedUSD}</strong>`;
+    resultDiv.innerHTML = `<strong>Total: ${formattedINR} / ${formattedUSD}</strong>`;
   });
 });
