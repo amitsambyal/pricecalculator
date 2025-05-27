@@ -5,15 +5,55 @@ document.addEventListener('DOMContentLoaded', () => {
   const unitSelect = document.getElementById('unit');
   const itemNameInput = document.getElementById('itemName');
   const resultDiv = document.getElementById('result');
+  const addItemBtn = document.getElementById('addItemBtn');
+  const itemList = document.getElementById('itemList');
 
-  // Conversion rate INR to USD (example rate)
   const INR_TO_USD = 82;
+  let items = [];
 
-  form.addEventListener('submit', () => {
-    // Clear previous result
-    resultDiv.textContent = '';
+  function renderItemList() {
+    itemList.innerHTML = '';
+    items.forEach((item, idx) => {
+      const li = document.createElement('li');
+      li.style.display = 'flex';
+      li.style.justifyContent = 'space-between';
+      li.style.alignItems = 'center';
+      li.style.padding = '4px 0';
 
-    // Get inputs and parse
+      const textSpan = document.createElement('span');
+      textSpan.textContent = `${item.name} (${item.weight} ${item.unit}) @ ₹${item.pricePerUnit}/${item.unit}`;
+
+      // Calculate price for this item
+      let adjustedWeight = item.weight;
+      if (item.unit === 'g') {
+        adjustedWeight = item.weight / 1000;
+      }
+      const itemTotal = item.pricePerUnit * adjustedWeight;
+      const priceSpan = document.createElement('span');
+      priceSpan.textContent = `₹${itemTotal.toFixed(2)}`;
+      priceSpan.style.marginLeft = '16px';
+      priceSpan.style.fontWeight = 'bold';
+
+      const removeSpan = document.createElement('span');
+      removeSpan.textContent = '×';
+      removeSpan.title = 'Remove';
+      removeSpan.style.color = '#e74c3c';
+      removeSpan.style.fontSize = '20px';
+      removeSpan.style.cursor = 'pointer';
+      removeSpan.style.marginLeft = '16px';
+      removeSpan.onclick = () => {
+        items.splice(idx, 1);
+        renderItemList();
+      };
+
+      li.appendChild(textSpan);
+      li.appendChild(priceSpan);
+      li.appendChild(removeSpan);
+      itemList.appendChild(li);
+    });
+  }
+
+  addItemBtn.addEventListener('click', () => {
     const pricePerUnit = parseFloat(pricePerUnitInput.value);
     let weight = parseFloat(weightInput.value);
     const unit = unitSelect.value;
@@ -22,42 +62,71 @@ document.addEventListener('DOMContentLoaded', () => {
     // Validate inputs
     if (isNaN(pricePerUnit) || pricePerUnit <= 0) {
       resultDiv.textContent = 'Please enter a valid positive number for price per unit.';
-      resultDiv.style.color = '#e74c3c'; // red
+      resultDiv.style.color = '#e74c3c';
       return;
     }
     if (isNaN(weight) || weight <= 0) {
       resultDiv.textContent = 'Please enter a valid positive number for weight/quantity.';
-      resultDiv.style.color = '#e74c3c'; // red
+      resultDiv.style.color = '#e74c3c';
       return;
     }
-    
-    // Calculate total price in INR
-    let adjustedWeight = weight;
-    if (unit === 'g') {
-      // Convert grams to kilograms for price calculation
-      adjustedWeight = weight / 1000;
+
+    items.push({
+      name: itemName,
+      pricePerUnit,
+      weight,
+      unit
+    });
+
+    renderItemList();
+
+    // Clear inputs
+    itemNameInput.value = '';
+    pricePerUnitInput.value = '';
+    weightInput.value = '';
+    unitSelect.value = 'kg';
+    resultDiv.textContent = '';
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    resultDiv.textContent = '';
+
+    // Only show result if at least one item is added
+    if (items.length === 0) {
+      resultDiv.textContent = 'Please add at least one item.';
+      resultDiv.style.color = '#e74c3c';
+      return;
     }
-    const totalPriceINR = pricePerUnit * adjustedWeight;
 
-    // Convert INR to USD
-    const totalPriceUSD = totalPriceINR / INR_TO_USD;
+    let totalINR = 0;
+    let summary = '';
+    items.forEach(item => {
+      let adjustedWeight = item.weight;
+      if (item.unit === 'g') {
+        adjustedWeight = item.weight / 1000;
+      }
+      // For other units, no conversion needed (ltr, doz)
+      const itemTotal = item.pricePerUnit * adjustedWeight;
+      totalINR += itemTotal;
+      summary += `${item.name} (${item.weight} ${item.unit}): ₹${itemTotal.toFixed(2)}\n`;
+    });
 
-    // Format as currency
-    const formattedINR = totalPriceINR.toLocaleString('en-IN', {
+    const totalUSD = totalINR / INR_TO_USD;
+    const formattedINR = totalINR.toLocaleString('en-IN', {
       style: 'currency',
       currency: 'INR',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
-    const formattedUSD = totalPriceUSD.toLocaleString('en-US', {
+    const formattedUSD = totalUSD.toLocaleString('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
 
-    // Show result with both currencies
     resultDiv.style.color = '#2c3e50';
-    resultDiv.textContent = `${itemName} (${weight} ${unit}) total price is ${formattedINR} / ${formattedUSD}`;
+    resultDiv.innerHTML = `<pre>${summary}</pre><strong>Total: ${formattedINR} / ${formattedUSD}</strong>`;
   });
 });

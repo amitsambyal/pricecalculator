@@ -3,23 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Grocery Price Calculator</title>
+  <title>My Bill Calculator</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Grocery Price Calculator</h1>
+    <h1>My Bill Calculator</h1>
     <form id="priceCalcForm" onsubmit="return false;">
       <div class="input-group">
-        <label for="itemName">Item Name:</label>
+        <label for="itemName">
+          Item Name<br>
+          <span style="font-size:0.95em;color:#888;">वस्तु का नाम</span>
+        </label>
         <input type="text" id="itemName" placeholder="e.g. Milk, Apples"/>
       </div>
       <div class="input-group">
-        <label for="pricePerUnit">Item Price(Kg/Ltr/Dozen):</label>
-        <input type="number" id="pricePerUnit" placeholder="20.00" min="0" step="0.01" required />
+        <label for="pricePerUnit">
+          Item Price (Kg/Ltr/Dozen)<br>
+          <span style="font-size:0.95em;color:#888;">वस्तु का मूल्य (किलो/लीटर/दर्जन)</span>
+        </label>
+        <input type="number" id="pricePerUnit" placeholder="0.00" min="0" step="0.01" />
       </div>
       <div class="input-group">
-        <label for="unit">Unit:</label>
+        <label for="unit">
+          Unit<br>
+          <span style="font-size:0.95em;color:#888;">मापन</span>
+        </label>
         <select id="unit" required>
           <option value="kg">Kilogram (kg)</option>
           <option value="g">Gram (gms)</option>
@@ -28,10 +37,16 @@
         </select>
       </div>
       <div class="input-group">
-        <label for="weight">Weight / Quantity:</label>
-        <input type="number" id="weight" placeholder="2.5" min="0" step="0.001" required />
+        <label for="weight">
+          Weight / Quantity<br>
+          <span style="font-size:0.95em;color:#888;">वजन / मात्रा</span>
+        </label>
+        <input type="number" id="weight" placeholder="2.5" min="0" step="0.001" />
       </div>
-      <button id="calculateBtn" type="submit">Calculate Total Price</button>
+      <button id="addItemBtn" type="button">ADD ITEM<br><span style="font-size:0.95em;color:#fff;">वस्तु जोड़ें</span></button>
+      <ul id="itemList"></ul>
+    </br>
+      <button id="calculateBtn" type="submit">CALCULATE TOTAL PRICE<br><span style="font-size:0.95em;color:#fff;">कुल मूल्य निकालें</span></button>
     </form>
     <div id="result" class="result"></div>
   </div>
