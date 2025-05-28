@@ -25,9 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Calculate price for this item
       let adjustedWeight = item.weight;
-      if (item.unit === 'g') {
-        adjustedWeight = item.weight / 1000;
-      }
       const itemTotal = item.pricePerUnit * adjustedWeight;
       const priceSpan = document.createElement('span');
       priceSpan.textContent = `₹${itemTotal.toFixed(2)}`;
