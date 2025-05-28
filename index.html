@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-   <meta name="keywords" content="grocery bill calculator, item cost calculator, bill calculator, grocery calculator, vegetable cost calculator, item price calculator, shopping bill calculator, cost calculator for vegetables, item calculator, total bill calculator, food cost calculator, market bill calculator, price calculator, grocery price calculator, itemized bill calculator, daily item calculator, fruits cost calculator, kitchen bill calculator, expense calculator, household bill calculator, supermarket calculator, grocery expense calculator, itemized cost calculator, item bill calculator, vegetable price calculator, grocery shopping calculator" />
-  
+  <meta name="keywords" content="grocery bill calculator, item cost calculator, bill calculator, grocery calculator, vegetable cost calculator, item price calculator, shopping bill calculator, cost calculator for vegetables, item calculator, total bill calculator, food cost calculator, market bill calculator, price calculator, grocery price calculator, itemized bill calculator, daily item calculator, fruits cost calculator, kitchen bill calculator, expense calculator, household bill calculator, supermarket calculator, grocery expense calculator, itemized cost calculator, item bill calculator, vegetable price calculator, grocery shopping calculator" />
   <title>My Bill Calculator</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <div class="container">
@@ -19,39 +19,61 @@
         </label>
         <input type="text" id="itemName" placeholder="e.g. Milk, Apples"/>
       </div>
-      <div class="input-group">
-        <label for="pricePerUnit">
-          Item Price (Kg/Ltr/Dozen/Pieces)<br>
-          <span style="font-size:0.95em;color:#888;">(वस्तु का मूल्य (किलो/लीटर/दर्जन/टुकड़े))</span>
-        </label>
-        <input type="number" id="pricePerUnit" placeholder="0.00" min="0" step="0.01" />
+      <div class="input-group" style="display: flex; gap: 12px; align-items: flex-end;">
+        <div style="flex:4;">
+          <label for="pricePerUnit">
+            Price<br>
+            <span style="font-size:0.95em;color:#888;">मूल्य</span>
+          </label>
+          <input type="number" id="pricePerUnit" placeholder="0.00" min="0" step="0.01" style="width:100%;" />
+        </div>
+        <div style="flex:6;">
+          <label for="unit">
+            Unit<br>
+            <span style="font-size:0.95em;color:#888;">(मापन)</span>
+          </label>
+          <select id="unit" required style="width:100%;">
+            <option value="kg">Kilogram (kg) किलो</option>
+            <option value="ltr">Litre (ltr) लीटर</option>
+            <option value="doz">Dozen (doz) दर्जन</option>
+            <option value="pcs">Pieces (pcs) टुकड़े</option>
+          </select>
+        </div>
       </div>
-      <div class="input-group">
-        <label for="unit">
-          Unit
-          <span style="font-size:0.95em;color:#888;">(मापन)</span>
-        </label>
-        <select id="unit" required>
-          <option value="kg">Kilogram (kg) किलो</option>         
-          <option value="ltr">Litre (ltr) लीटर</option>
-          <option value="doz">Dozen (doz) दर्जन</option>
-          <option value="pcs">Pieces (pcs) टुकड़े</option>
-        </select>
+      <div class="input-group" style="display: flex; gap: 12px; align-items: flex-end;">
+        <div style="flex:4;">
+          <label for="weight">
+            Weight / Quantity<br>
+            <span style="font-size:0.95em;color:#888;">(वजन / मात्रा)</span>
+          </label>
+          <input type="number" id="weight" placeholder="0.00" min="0" step="0.001" value="1" style="width:100%;" />
+        </div>
+        <div style="flex:6;">
+          <label for="unit2">
+            Unit<br>
+            <span style="font-size:0.95em;color:#888;">(मापन)</span>
+          </label>
+          <select id="unit2" required style="width:100%;">
+            <option value="kg">Kilogram (kg) किलो</option>
+            <option value="ltr">Litre (ltr) लीटर</option>
+            <option value="doz">Dozen (doz) दर्जन</option>
+            <option value="pcs">Pieces (pcs) टुकड़े</option>
+          </select>
+        </div>
       </div>
-      <div class="input-group">
-        <label for="weight">
-          Weight / Quantity
-          <span style="font-size:0.95em;color:#888;">(वजन / मात्रा)</span>
-        </label>
-        <input type="number" id="weight" placeholder="0.00" min="0" step="0.001" />
-      </div>      
     </br>
-      <button id="calculateBtn" type="submit">CALCULATE TOTAL PRICE<br><span style="font-size:0.95em;color:#fff;">(कुल मूल्य निकालें)</span></button>
+      <button id="calculateBtn" type="submit">
+        CALCULATE TOTAL PRICE<br>
+        <span style="font-size:0.95em;color:#fff;">(कुल मूल्य निकालें)</span>
+      </button>
       <ul id="itemList"></ul>
     </form>
     <div id="result" class="result"></div>
+    <!-- Download PDF link shown below the total amount -->
+    <a id="downloadPdfBtn" href="#" style="display:none; background:none; border:none; color:#0066b2; text-decoration:underline; cursor:pointer; font-size:1.1rem; font-weight:600; margin-top:10px;">
+      DOWNLOAD PDF<br><span style="font-size:0.95em;color:#0066b2;">(पीडीएफ डाउनलोड करें)</span>
+    </a>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
