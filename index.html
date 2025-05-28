@@ -13,40 +13,40 @@
       <div class="input-group">
         <label for="itemName">
           Item Name
-          <span style="font-size:0.95em;color:#888;">वस्तु का नाम</span>
+          <span style="font-size:0.95em;color:#888;">(वस्तु का नाम)</span>
         </label>
         <input type="text" id="itemName" placeholder="e.g. Milk, Apples"/>
       </div>
       <div class="input-group">
         <label for="pricePerUnit">
-          Item Price (Kg/Ltr/Dozen)<br>
-          <span style="font-size:0.95em;color:#888;">वस्तु का मूल्य (किलो/लीटर/दर्जन)</span>
+          Item Price (Kg/Ltr/Dozen/Pieces)<br>
+          <span style="font-size:0.95em;color:#888;">(वस्तु का मूल्य (किलो/लीटर/दर्जन/टुकड़े))</span>
         </label>
         <input type="number" id="pricePerUnit" placeholder="0.00" min="0" step="0.01" />
       </div>
       <div class="input-group">
         <label for="unit">
           Unit
-          <span style="font-size:0.95em;color:#888;">मापन</span>
+          <span style="font-size:0.95em;color:#888;">(मापन)</span>
         </label>
         <select id="unit" required>
-          <option value="kg">Kilogram (kg)</option>
-          <option value="g">Gram (gms)</option>
-          <option value="ltr">Litre (ltr)</option>
-          <option value="doz">Dozen (doz)</option>
+          <option value="kg">Kilogram (kg) किलो</option>
+          <option value="g">Gram (gms) ग्राम</option>
+          <option value="ltr">Litre (ltr) लीटर</option>
+          <option value="doz">Dozen (doz) दर्जन</option>
+          <option value="pcs">Pieces (pcs) टुकड़े</option>
         </select>
       </div>
       <div class="input-group">
         <label for="weight">
           Weight / Quantity
-          <span style="font-size:0.95em;color:#888;">वजन / मात्रा</span>
+          <span style="font-size:0.95em;color:#888;">(वजन / मात्रा)</span>
         </label>
-        <input type="number" id="weight" placeholder="2.5" min="0" step="0.001" />
-      </div>
-      <button id="addItemBtn" type="button">ADD ITEM<span style="font-size:0.95em;color:#fff;">   वस्तु जोड़ें</span></button>
-      <ul id="itemList"></ul>
+        <input type="number" id="weight" placeholder="0.00" min="0" step="0.001" />
+      </div>      
     </br>
-      <button id="calculateBtn" type="submit">CALCULATE TOTAL PRICE<br><span style="font-size:0.95em;color:#fff;">कुल मूल्य निकालें</span></button>
+      <button id="calculateBtn" type="submit">CALCULATE TOTAL PRICE<br><span style="font-size:0.95em;color:#fff;">(कुल मूल्य निकालें)</span></button>
+      <ul id="itemList"></ul>
     </form>
     <div id="result" class="result"></div>
   </div>
