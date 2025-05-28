@@ -5,11 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const unitSelect = document.getElementById('unit');
   const itemNameInput = document.getElementById('itemName');
   const resultDiv = document.getElementById('result');
-  const addItemBtn = document.getElementById('addItemBtn');
   const itemList = document.getElementById('itemList');
 
   const INR_TO_USD = 82;
   let items = [];
+  let unnamedCount = 1; // Counter for unnamed items
 
   function renderItemList() {
     itemList.innerHTML = '';
@@ -53,63 +53,47 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  addItemBtn.addEventListener('click', () => {
-    const pricePerUnit = parseFloat(pricePerUnitInput.value);
-    let weight = parseFloat(weightInput.value);
-    const unit = unitSelect.value;
-    const itemName = itemNameInput.value.trim() || 'Item';
-
-    // Validate inputs
-    if (isNaN(pricePerUnit) || pricePerUnit <= 0) {
-      resultDiv.textContent = 'Please enter a valid positive number for price per unit.';
-      resultDiv.style.color = '#e74c3c';
-      return;
-    }
-    if (isNaN(weight) || weight <= 0) {
-      resultDiv.textContent = 'Please enter a valid positive number for weight/quantity.';
-      resultDiv.style.color = '#e74c3c';
-      return;
-    }
-
-    items.push({
-      name: itemName,
-      pricePerUnit,
-      weight,
-      unit
-    });
-
-    renderItemList();
-
-    // Clear inputs
-    itemNameInput.value = '';
-    pricePerUnitInput.value = '';
-    weightInput.value = '';
-    unitSelect.value = 'kg';
-    resultDiv.textContent = '';
-  });
-
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     resultDiv.textContent = '';
 
-    // Only show result if at least one item is added
-    if (items.length === 0) {
-      resultDiv.textContent = 'Please add at least one item.';
-      resultDiv.style.color = '#e74c3c';
-      return;
+    // Always add the current form as a new item, even if fields are empty or invalid
+    const pricePerUnit = parseFloat(pricePerUnitInput.value) || 0;
+    let weight = parseFloat(weightInput.value) || 0;
+    const unit = unitSelect.value;
+    let itemName = itemNameInput.value.trim();
+
+    if (!itemName) {
+      itemName = `Item ${unnamedCount++}`;
     }
 
+    // Only add if price or weight is not zero (optional: remove this check if you want to allow zero-value items)
+    if (pricePerUnit > 0 && weight > 0) {
+      items.push({
+        name: itemName,
+        pricePerUnit,
+        weight,
+        unit
+      });
+    }
+
+    renderItemList();
+
+    // Clear inputs after adding
+    itemNameInput.value = '';
+    pricePerUnitInput.value = '';
+    weightInput.value = '';
+    unitSelect.value = 'kg';
+
+    // Calculate total
     let totalINR = 0;
-    let summary = '';
     items.forEach(item => {
       let adjustedWeight = item.weight;
       if (item.unit === 'g') {
         adjustedWeight = item.weight / 1000;
       }
-      // For other units, no conversion needed (ltr, doz)
       const itemTotal = item.pricePerUnit * adjustedWeight;
       totalINR += itemTotal;
-      summary += `${item.name} (${item.weight} ${item.unit}): ₹${itemTotal.toFixed(2)}\n`;
     });
 
     const totalUSD = totalINR / INR_TO_USD;
@@ -126,7 +110,13 @@ document.addEventListener('DOMContentLoaded', () => {
       maximumFractionDigits: 2,
     });
 
-    resultDiv.style.color = '#2c3e50';
-    resultDiv.innerHTML = `<pre>${summary}</pre><strong>Total: ${formattedINR} / ${formattedUSD}</strong>`;
+    // If no items, show 0 price
+    if (items.length === 0) {
+      resultDiv.style.color = '#2c3e50';
+      resultDiv.innerHTML = `<strong>Total: ₹0.00 / $0.00</strong>`;
+    } else {
+      resultDiv.style.color = '#2c3e50';
+      resultDiv.innerHTML = `<strong>Total: ${formattedINR} / ${formattedUSD}</strong>`;
+    }
   });
 });
