@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
       weightInput.value = 1; // Default to 1 for other units
       weightInput.step = '0.001';
       weightInput.min = '0';
-      weightInput.type = 'number';
+      weightInput.type = 'decimal';
     }
   });
 
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       weightInput.step = '0.001';
       weightInput.min = '0';
-      weightInput.type = 'number';
+      weightInput.type = 'decimal';
     }
   });
 
