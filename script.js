@@ -28,9 +28,15 @@ document.addEventListener('DOMContentLoaded', () => {
         <option value="ltr">Litre (ltr) लीटर</option>
         <option value="ml">Millilitre (ml) मिलीलीटर</option>
       `;
-    } else if (selectedUnit === 'doz' || selectedUnit === 'pcs') {
+    } else if (selectedUnit === 'doz') {
       unit2Select.innerHTML = `
         <option value="pcs">Pieces (pcs) टुकड़े</option>
+        <option value="doz">Dozen (doz) दर्जन</option>
+      `;
+    }
+    else if (selectedUnit === 'pcs') {
+      unit2Select.innerHTML = `
+        <option value="pcs">Pieces (pcs) टुकड़े</option>        
       `;
     }
   }
@@ -42,38 +48,65 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set default weight value based on selected price unit
     if (unitSelect.value === 'doz') {
       weightInput.value = 12;
-    }  else {
+      weightInput.step = '1';
+      weightInput.min = '0';
+      weightInput.type = 'number';
+    } else if (unitSelect.value === 'pcs') {
+      weightInput.value = 1;
+      weightInput.step = '1';
+      weightInput.min = '0';
+      weightInput.type = 'number';
+    } else {
       weightInput.value = 1; // Default to 1 for other units
+      weightInput.step = '0.001';
+      weightInput.min = '0';
+      weightInput.type = 'number';
+    }
+  });
+
+  unit2Select.addEventListener('change', () => {
+    const selectedWeightUnit = unit2Select.value;
+    if (selectedWeightUnit === 'g' || selectedWeightUnit === 'ml' || selectedWeightUnit === 'doz' || selectedWeightUnit === 'pcs') {
+      weightInput.step = '1';
+      weightInput.min = '0';
+      weightInput.value = weightInput.value ? Math.floor(weightInput.value) : '';
+      weightInput.type = 'number';
+    } else {
+      weightInput.step = '0.001';
+      weightInput.min = '0';
+      weightInput.type = 'number';
     }
   });
 
   function getAdjustedWeight(weight, priceUnit, weightUnit) {
-    // Convert weight to the price unit for calculation
-    if (priceUnit === weightUnit) {
-      return weight;
-    }
-    // kg <-> g
-    if (priceUnit === 'kg' && weightUnit === 'g') {
-      return weight / 1000;
-    }
-    if (priceUnit === 'g' && weightUnit === 'kg') {
-      return weight * 1000;
-    }
-    // ltr <-> ml
-    if (priceUnit === 'ltr' && weightUnit === 'ml') {
-      return weight / 1000;
-    }
-    if (priceUnit === 'ml' && weightUnit === 'ltr') {
-      return weight * 1000;
-    }
-    // If weight is entered in dozen, convert to pieces (1 dozen = 12 pieces)
-    if (weightUnit === 'pcs') {
-      return weight / 12;
-    }
-    // doz <-> pcs or pcs <-> pcs (no conversion needed)
-    // If units don't match and are not convertible, treat as 0
+  // If units match, return as is
+  if (priceUnit === weightUnit) {
     return weight;
   }
+  // kg <-> g
+  if (priceUnit === 'kg' && weightUnit === 'g') {
+    return weight / 1000;
+  }
+  if (priceUnit === 'g' && weightUnit === 'kg') {
+    return weight * 1000;
+  }
+  // ltr <-> ml
+  if (priceUnit === 'ltr' && weightUnit === 'ml') {
+    return weight / 1000;
+  }
+  if (priceUnit === 'ml' && weightUnit === 'ltr') {
+    return weight * 1000;
+  }
+  // doz <-> pcs
+  if (priceUnit === 'doz' && weightUnit === 'pcs') {
+    return weight / 12;
+  }
+  if (priceUnit === 'pcs' && weightUnit === 'doz') {
+    return weight * 12;
+  }
+  // If units don't match and are not convertible, treat as 0
+  return weight;
+}
 
   function renderItemList() {
     itemList.innerHTML = '';
@@ -90,9 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
       let itemTotal = item.pricePerUnit * adjustedWeight;
       let pricePerPieceText = '';
       let itemLabel = item.name.startsWith('Item ') ? 'Item' : item.name; // Show just "Item" if no name
-      if (item.unit === 'pcs') {
-        pricePerPieceText = ` (Rs${(itemTotal / item.weight).toFixed(2)} per piece)`;
-      }
+      //if (item.unit === 'pcs') {
+       // pricePerPieceText = ` (Rs${(itemTotal / item.weight).toFixed(2)} per piece)`;
+     // }
       textSpan.textContent = `${idx + 1}. ${itemLabel} (${item.weight} ${item.unit}) @ Rs${item.pricePerUnit}/${item.priceUnit}${pricePerPieceText}`;
 
       const priceSpan = document.createElement('span');
@@ -165,31 +198,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Calculate total
     let totalINR = 0;
     items.forEach(item => {
-      let adjustedWeight = getAdjustedWeight(item.weight, item.priceUnit, item.unit);
+      let adjustedWeight = getAdjustedWeight(item.weight, item.priceUnit, item.unit); // FIXED: use item.priceUnit
       const itemTotal = item.pricePerUnit * adjustedWeight;
       totalINR += itemTotal;
     });
 
-    const totalUSD = totalINR / INR_TO_USD;
-    const formattedINR = totalINR.toLocaleString('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-    const formattedUSD = totalUSD.toLocaleString('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+    // Remove USD calculation and formatting
+    // const totalUSD = totalINR / INR_TO_USD;
+    // const formattedUSD = totalUSD.toLocaleString('en-US', {
+    //   style: 'currency',
+    //   currency: 'USD',
+    //   minimumFractionDigits: 2,
+    //   maximumFractionDigits: 2,
+    // });
 
     if (items.length === 0) {
       resultDiv.style.color = '#2c3e50';
-      resultDiv.innerHTML = `<strong>Total: Rs0.00 / $0.00</strong>`;
+      resultDiv.innerHTML = `<strong>Total: ₹0.00</strong>`;
     } else {
       resultDiv.style.color = '#2c3e50';
-      resultDiv.innerHTML = `<strong>Total: ${formattedINR.replace('₹', 'Rs')} / ${formattedUSD}</strong>`;
+      resultDiv.innerHTML = `<strong>Total: ₹${totalINR.toFixed(2)}</strong>`;
     }
   });
 
@@ -215,15 +243,34 @@ document.addEventListener('DOMContentLoaded', () => {
       doc.text('No items added.', 10, y);
       y += 10;
     } else {
+      // Table headers
+      doc.setFont(undefined, 'bold');
+      doc.text('S.No', 10, y);
+      doc.text('Item Name', 25, y);
+      doc.text('Qty', 90, y);
+      doc.text('Rate (Rupees)', 115, y);
+      doc.text('Amount in Rupees', 150, y);
+      doc.setFont(undefined, 'normal');
+      y += 8;
+
       items.forEach((item, idx) => {
         let adjustedWeight = getAdjustedWeight(item.weight, item.priceUnit, item.unit);
         const itemTotal = item.pricePerUnit * adjustedWeight;
         let itemLabel = item.name.startsWith('Item ') ? 'Item' : item.name; // Show just "Item" if no name
-        let line = `${idx + 1}. ${itemLabel} (${item.weight} ${item.unit}) @ Rs${item.pricePerUnit}/${item.priceUnit} = Rs${itemTotal.toFixed(2)}`;
-        if (item.unit === 'pcs' && item.weight > 0) {
-          line += ` (Rs${(itemTotal / item.weight).toFixed(2)} per piece)`;
-        }
-        doc.text(line, 10, y);
+
+        // Format quantity string
+        let qtyStr = `${item.weight} ${item.unit}`;
+        // Format rate string
+        let rateStr = `${item.pricePerUnit}/${item.priceUnit}`;
+        // Format amount string
+        let amtStr = `${itemTotal.toFixed(2)}`;
+
+        doc.text(String(idx + 1), 10, y);
+        doc.text(itemLabel, 25, y);
+        doc.text(qtyStr, 90, y);
+        doc.text(rateStr, 115, y);
+        doc.text(amtStr, 150, y);
+
         y += 8;
         if (y > 270) {
           doc.addPage();
@@ -234,17 +281,39 @@ document.addEventListener('DOMContentLoaded', () => {
       // Calculate total
       let totalINR = 0;
       items.forEach(item => {
-        let adjustedWeight = getAdjustedWeight(item.weight, item.priceUnit, item.unit);
-        const itemTotal = item.pricePerUnit * adjustedWeight;
-        totalINR += itemTotal;
-      });
-      const totalUSD = totalINR / INR_TO_USD;
+      let adjustedWeight = getAdjustedWeight(item.weight, item.priceUnit, item.unit); // FIXED: use item.priceUnit
+      const itemTotal = item.pricePerUnit * adjustedWeight;
+      totalINR += itemTotal;
+    });
       y += 5;
       doc.setFontSize(14);
       doc.setTextColor(44, 62, 80);
-      doc.text(`Total: Rs${totalINR.toFixed(2)} / $${totalUSD.toFixed(2)}`, 10, y);
+      doc.text(`Total: Rupees ${totalINR.toFixed(2)}`, 115, y); // Align total under "Amount" column
     }
 
-    doc.save('bill.pdf');
+    // Save with current date
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const filename = `bill_${dd}-${mm}-${yyyy}.pdf`;
+
+    doc.save(filename);
+  });
+
+  // Restrict pricePerUnit and weight input to only valid numbers (decimal or integer)
+  pricePerUnitInput.addEventListener('input', () => {
+    // Allow only numbers and at most one decimal point
+    pricePerUnitInput.value = pricePerUnitInput.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+  });
+
+  weightInput.addEventListener('input', () => {
+    // If step is 1 (integer), allow only digits
+    if (weightInput.step === '1') {
+      weightInput.value = weightInput.value.replace(/[^0-9]/g, '');
+    } else {
+      // Allow only numbers and at most one decimal point
+      weightInput.value = weightInput.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+    }
   });
 });
