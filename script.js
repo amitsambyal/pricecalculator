@@ -301,19 +301,5 @@ document.addEventListener('DOMContentLoaded', () => {
     doc.save(filename);
   });
 
-  // Restrict pricePerUnit and weight input to only valid numbers (decimal or integer)
-  pricePerUnitInput.addEventListener('input', () => {
-    // Allow only numbers and at most one decimal point
-    pricePerUnitInput.value = pricePerUnitInput.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
-  });
-
-  weightInput.addEventListener('input', () => {
-    // If step is 1 (integer), allow only digits
-    if (weightInput.step === '1') {
-      weightInput.value = weightInput.value.replace(/[^0-9]/g, '');
-    } else {
-      // Allow only numbers and at most one decimal point
-      weightInput.value = weightInput.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
-    }
-  });
+ 
 });
