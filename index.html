@@ -4,20 +4,39 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="keywords" content="grocery bill calculator, item cost calculator, bill calculator, grocery calculator, vegetable cost calculator, item price calculator, shopping bill calculator, cost calculator for vegetables, item calculator, total bill calculator, food cost calculator, market bill calculator, price calculator, grocery price calculator, itemized bill calculator, daily item calculator, fruits cost calculator, kitchen bill calculator, expense calculator, household bill calculator, supermarket calculator, grocery expense calculator, itemized cost calculator, item bill calculator, vegetable price calculator, grocery shopping calculator" />
-  <title>My Bill Calculator</title>
+  <meta name="description" content="My Bill Calculator helps you quickly and accurately calculate the total price of groceries, vegetables, fruits, and other daily items with irregular weights or quantities. Download your detailed bill as a PDF. Perfect for market, grocery, and kitchen shopping." />
+  <meta name="author" content="Your Name or Brand" />
+  <title>My Bill Calculator | Grocery, Vegetable, and Daily Item Price Calculator</title>
+  <link rel="canonical" href="https://www.mybillcalculator.com/pricecalculator/" />
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Open Graph / Facebook -->
+  <meta property="og:title" content="My Bill Calculator | Grocery, Vegetable, and Daily Item Price Calculator" />
+  <meta property="og:description" content="Easily calculate your grocery, vegetable, and daily item bills with irregular weights or quantities. Download your bill as PDF. Free, fast, and accurate." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.mybillcalculator.com/pricecalculator/" />
+  <meta property="og:image" content="https://www.mybillcalculator.com/pricecalculator/billcalculator.jpg" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="My Bill Calculator | Grocery, Vegetable, and Daily Item Price Calculator" />
+  <meta name="twitter:description" content="Easily calculate your grocery, vegetable, and daily item bills with irregular weights or quantities. Download your bill as PDF. Free, fast, and accurate." />
+  <meta name="twitter:image" content="https://www.mybillcalculator.com/pricecalculator/billcalculator.jpg" />
 </head>
 <body>
   <div class="container">
-    <h1>My Bill Calculator</h1>
+    <h1>
+      My Bill Calculator
+      <span style="display:block;font-size:1.1em;color:#666;font-weight:400;">
+        Grocery, Vegetable, and Daily Item Price Calculator
+      </span>
+    </h1>
     <form id="priceCalcForm" onsubmit="return false;">
       <div class="input-group">
         <label for="itemName">
           Item Name
           <span style="font-size:0.95em;color:#888;">(वस्तु का नाम)</span>
         </label>
-        <input type="text" id="itemName" placeholder="e.g. Milk, Apples"/>
+        <input type="text" id="itemName" placeholder="e.g. Milk, Apples" autocomplete="off"/>
       </div>
       <div class="input-group" style="display: flex; gap: 12px; align-items: flex-end;">
         <div style="flex:4;">
@@ -25,7 +44,7 @@
             Price<br>
             <span style="font-size:0.95em;color:#888;">मूल्य</span>
           </label>
-          <input type="number" id="pricePerUnit" placeholder="0.00" min="0" step="0.01" style="width:100%;" />
+          <input type="number" id="pricePerUnit" placeholder="0.00" min="0" step="0.01" style="width:100%;" autocomplete="off" />
         </div>
         <div style="flex:6;">
           <label for="unit">
@@ -46,7 +65,7 @@
             Weight / Quantity<br>
             <span style="font-size:0.95em;color:#888;">(वजन / मात्रा)</span>
           </label>
-          <input type="number" id="weight" placeholder="0.00" min="0" step="0.001" value="1" style="width:100%;" />
+          <input type="number" id="weight" placeholder="0.00" min="0" step="0.001" value="1" style="width:100%;" autocomplete="off" />
         </div>
         <div style="flex:6;">
           <label for="unit2">
@@ -61,7 +80,6 @@
           </select>
         </div>
       </div>
-    </br>
       <button id="calculateBtn" type="submit">
         CALCULATE TOTAL PRICE<br>
         <span style="font-size:0.95em;color:#fff;">(कुल मूल्य निकालें)</span>
@@ -73,7 +91,6 @@
     <a id="downloadPdfBtn" href="#" style="display:none; background:none; border:none; color:#0066b2; text-decoration:underline; cursor:pointer; font-size:1.1rem; font-weight:600; margin-top:10px;">
       DOWNLOAD PDF<br><span style="font-size:0.95em;color:#0066b2;">(पीडीएफ डाउनलोड करें)</span>
     </a>
-    <!-- Move the footer here, just below the calculate total price/result/download -->
     <footer style="margin-top:32px; padding:16px 0; color:#444; font-size:1.05em; text-align:center; background:#f7f7f7;">
       <strong>About This Calculator</strong><br>
       This calculator is designed for your daily routine purchases, especially when item weights are not round numbers like 1, 2, or 3 kg, but instead are values such as 1 kg 432 grams, 2.75 liters, or 7 pieces. It helps you quickly and accurately calculate the price of groceries, vegetables, fruits, and other household items where weights and quantities are often irregular. <br><br>
