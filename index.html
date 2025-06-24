@@ -4,11 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="keywords" content="grocery bill calculator, item cost calculator, bill calculator, grocery calculator, vegetable cost calculator, item price calculator, shopping bill calculator, cost calculator for vegetables, item calculator, total bill calculator, food cost calculator, market bill calculator, price calculator, grocery price calculator, itemized bill calculator, daily item calculator, fruits cost calculator, kitchen bill calculator, expense calculator, household bill calculator, supermarket calculator, grocery expense calculator, itemized cost calculator, item bill calculator, vegetable price calculator, grocery shopping calculator" />
-<<<<<<< HEAD
-  <title>My Bill Calculator</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-=======
   <meta name="description" content="My Bill Calculator helps you quickly and accurately calculate the total price of groceries, vegetables, fruits, and other daily items with irregular weights or quantities. Download your detailed bill as a PDF. Perfect for market, grocery, and kitchen shopping." />
   <meta name="author" content="Your Name or Brand" />
   <title>My Bill Calculator | Grocery, Vegetable, and Daily Item Price Calculator</title>
@@ -34,7 +29,6 @@
   gtag('js', new Date());
   gtag('config', 'G-HEJMX4610L');
 </script>
->>>>>>> eb7e07af7ff830ba0f7963c6a438f2905bdc2a96
 </head>
 <body>
   <div class="container">
@@ -55,26 +49,43 @@
       <div class="input-group" style="display: flex; gap: 12px; align-items: flex-end;">
         <div style="flex:4;">
           <label for="pricePerUnit">
-            Price<br>
-            <span style="font-size:0.95em;color:#888;">मूल्य</span>
+            Rate<br>
+            <span style="font-size:0.95em;color:#888;">(मूल्य)</span>
           </label>
-<<<<<<< HEAD
-          <input type="number" id="pricePerUnit" placeholder="0.00" min="0" step="0.01" style="width:100%;" />
-=======
           <input type="number" id="pricePerUnit" placeholder="0.00" min="0" step="0.01" style="width:100%;" autocomplete="off" />
->>>>>>> eb7e07af7ff830ba0f7963c6a438f2905bdc2a96
         </div>
-        <div style="flex:6;">
-          <label for="unit">
-            Unit<br>
-            <span style="font-size:0.95em;color:#888;">(मापन)</span>
-          </label>
-          <select id="unit" required style="width:100%;">
-            <option value="kg">Kilogram (kg) किलो</option>
-            <option value="ltr">Litre (ltr) लीटर</option>
-            <option value="doz">Dozen (doz) दर्जन</option>
-            <option value="pcs">Pieces (pcs) टुकड़े</option>
-          </select>
+        <div style="flex:6; display: flex; gap: 0; align-items: flex-end;">
+          <div style="flex:2;">
+            <label for="unitValue" style="padding:0;margin:0;">
+              <br>
+              <span style="font-size:0.95em;color:#888;"><br></span>
+            </label>
+            <input
+              type="number"
+              id="unitValue"
+              placeholder="1"
+              min="0"
+              step="0.1"
+              style="width:100%;padding:0;margin:0;box-sizing:border-box;height:44px;line-height:36px;text-align: center;"
+              
+            />
+          </div>
+          <div style="flex:3;">
+            <label for="unit" style="padding:0;margin:0;">
+              Unit<br>
+              <span style="font-size:0.95em;color:#888;">(मापन)</span>
+            </label>
+            <select
+              id="unit"
+              required
+              style="width:100%;padding:0;margin:0;box-sizing:border-box;height:44px;line-height:36px;"
+            >
+              <option value="kg">Kilogram (kg) किलो</option>
+              <option value="ltr">Litre (ltr) लीटर</option>
+              <option value="doz">Dozen (doz) दर्जन</option>
+              <option value="pcs">Pieces (pcs) टुकड़े</option>
+            </select>
+          </div>
         </div>
       </div>
       <div class="input-group" style="display: flex; gap: 12px; align-items: flex-end;">
@@ -100,7 +111,7 @@
       </div>
       <button id="calculateBtn" type="submit">
         CALCULATE TOTAL PRICE<br>
-        <span style="font-size:0.95em;color:#fff;">(कुल मूल्य निकालें)</span>
+        <span style="font-size:0.95em;color:#fff;">(कुल कीमत निकालें)</span>
       </button>
       <ul id="itemList"></ul>
     </form>
