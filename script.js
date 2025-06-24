@@ -11,102 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const INR_TO_USD = 82;
   let items = [];
-  let unnamedCount = 1; // Counter for unnamed items
-
-  // --- Unit sync logic ---
-  function updateUnit2Options() {
-    const selectedUnit = unitSelect.value;
-    unit2Select.innerHTML = ''; // Clear previous options
-
-    if (selectedUnit === 'kg') {
-      unit2Select.innerHTML = `
-        <option value="kg">Kilogram (kg) किलो</option>
-        <option value="g">Gram (gm) ग्राम</option>
-      `;
-    } else if (selectedUnit === 'ltr') {
-      unit2Select.innerHTML = `
-        <option value="ltr">Litre (ltr) लीटर</option>
-        <option value="ml">Millilitre (ml) मिलीलीटर</option>
-      `;
-    } else if (selectedUnit === 'doz') {
-      unit2Select.innerHTML = `
-        <option value="pcs">Pieces (pcs) टुकड़े</option>
-        <option value="doz">Dozen (doz) दर्जन</option>
-      `;
-    }
-    else if (selectedUnit === 'pcs') {
-      unit2Select.innerHTML = `
-        <option value="pcs">Pieces (pcs) टुकड़े</option>        
-      `;
-    }
-  }
-
-  // Initial call and event binding
-  updateUnit2Options();
-  unitSelect.addEventListener('change', () => {
-    updateUnit2Options();
-    // Set default weight value based on selected price unit
-    if (unitSelect.value === 'doz') {
-      weightInput.value = 12;
-      weightInput.step = '1';
-      weightInput.min = '0';
-      weightInput.type = 'number';
-    } else if (unitSelect.value === 'pcs') {
-      weightInput.value = 1;
-      weightInput.step = '1';
-      weightInput.min = '0';
-      weightInput.type = 'number';
-    } else {
-      weightInput.value = 1; // Default to 1 for other units
-      weightInput.step = '0.001';
-      weightInput.min = '0';
-      weightInput.type = 'number';
-    }
-  });
-
-  unit2Select.addEventListener('change', () => {
-    const selectedWeightUnit = unit2Select.value;
-    if (selectedWeightUnit === 'g' || selectedWeightUnit === 'ml' || selectedWeightUnit === 'doz' || selectedWeightUnit === 'pcs') {
-      weightInput.step = '1';
-      weightInput.min = '0';
-      weightInput.value = weightInput.value ? Math.floor(weightInput.value) : '';
-      weightInput.type = 'number';
-    } else {
-      weightInput.step = '0.001';
-      weightInput.min = '0';
-      weightInput.type = 'number';
-    }
-  });
-
-  function getAdjustedWeight(weight, priceUnit, weightUnit) {
-  // If units match, return as is
-  if (priceUnit === weightUnit) {
-    return weight;
-  }
-  // kg <-> g
-  if (priceUnit === 'kg' && weightUnit === 'g') {
-    return weight / 1000;
-  }
-  if (priceUnit === 'g' && weightUnit === 'kg') {
-    return weight * 1000;
-  }
-  // ltr <-> ml
-  if (priceUnit === 'ltr' && weightUnit === 'ml') {
-    return weight / 1000;
-  }
-  if (priceUnit === 'ml' && weightUnit === 'ltr') {
-    return weight * 1000;
-  }
-  // doz <-> pcs
-  if (priceUnit === 'doz' && weightUnit === 'pcs') {
-    return weight / 12;
-  }
-  if (priceUnit === 'pcs' && weightUnit === 'doz') {
-    return weight * 12;
-  }
-  // If units don't match and are not convertible, treat as 0
-  return weight;
-}
 
   function renderItemList() {
     itemList.innerHTML = '';
@@ -284,36 +188,26 @@ document.addEventListener('DOMContentLoaded', () => {
       let adjustedWeight = getAdjustedWeight(item.weight, item.priceUnit, item.unit); // FIXED: use item.priceUnit
       const itemTotal = item.pricePerUnit * adjustedWeight;
       totalINR += itemTotal;
+      summary += `${item.name} (${item.weight} ${item.unit}): ₹${itemTotal.toFixed(2)}\n`;
     });
-      y += 5;
-      doc.setFontSize(14);
-      doc.setTextColor(44, 62, 80);
-      doc.text(`Total: Rupees ${totalINR.toFixed(2)}`, 115, y); // Align total under "Amount" column
-    }
 
-    // Save with current date
-    const now = new Date();
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const dd = String(now.getDate()).padStart(2, '0');
-    const filename = `bill_${dd}-${mm}-${yyyy}.pdf`;
+    const totalUSD = totalINR / INR_TO_USD;
+    const formattedINR = totalINR.toLocaleString('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    const formattedUSD = totalUSD.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
 
-    doc.save(filename);
+    resultDiv.style.color = '#2c3e50';
+    resultDiv.innerHTML = `<pre>${summary}</pre><strong>Total: ${formattedINR} / ${formattedUSD}</strong>`;
   });
 
-  // Restrict pricePerUnit and weight input to only valid numbers (decimal or integer)
-  pricePerUnitInput.addEventListener('input', () => {
-    // Allow only numbers and at most one decimal point
-    pricePerUnitInput.value = pricePerUnitInput.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
-  });
-
-  weightInput.addEventListener('input', () => {
-    // If step is 1 (integer), allow only digits
-    if (weightInput.step === '1') {
-      weightInput.value = weightInput.value.replace(/[^0-9]/g, '');
-    } else {
-      // Allow only numbers and at most one decimal point
-      weightInput.value = weightInput.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
-    }
-  });
+ 
 });
