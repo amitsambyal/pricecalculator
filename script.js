@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const itemNameInput = document.getElementById('itemName');
   const resultDiv = document.getElementById('result');
   const itemList = document.getElementById('itemList');
-  //const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+  const downloadPdfBtn = document.getElementById('downloadPdfBtn'); // UNCOMMENTED THIS LINE
 
-  const INR_TO_USD = 82;
+  const INR_TO_USD = 82; // This constant is not used in the provided code, but kept for context.
   let items = [];
   let unnamedCount = 1; // Counter for unnamed items
 
@@ -79,34 +79,34 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function getAdjustedWeight(weight, priceUnit, weightUnit) {
-  // If units match, return as is
-  if (priceUnit === weightUnit) {
+    // If units match, return as is
+    if (priceUnit === weightUnit) {
+      return weight;
+    }
+    // kg <-> g
+    if (priceUnit === 'kg' && weightUnit === 'g') {
+      return weight / 1000;
+    }
+    if (priceUnit === 'g' && weightUnit === 'kg') {
+      return weight * 1000;
+    }
+    // ltr <-> ml
+    if (priceUnit === 'ltr' && weightUnit === 'ml') {
+      return weight / 1000;
+    }
+    if (priceUnit === 'ml' && weightUnit === 'ltr') {
+      return weight * 1000;
+    }
+    // doz <-> pcs
+    if (priceUnit === 'doz' && weightUnit === 'pcs') {
+      return weight / 12;
+    }
+    if (priceUnit === 'pcs' && weightUnit === 'doz') {
+      return weight * 12;
+    }
+    // If units don't match and are not convertible, treat as 0
     return weight;
   }
-  // kg <-> g
-  if (priceUnit === 'kg' && weightUnit === 'g') {
-    return weight / 1000;
-  }
-  if (priceUnit === 'g' && weightUnit === 'kg') {
-    return weight * 1000;
-  }
-  // ltr <-> ml
-  if (priceUnit === 'ltr' && weightUnit === 'ml') {
-    return weight / 1000;
-  }
-  if (priceUnit === 'ml' && weightUnit === 'ltr') {
-    return weight * 1000;
-  }
-  // doz <-> pcs
-  if (priceUnit === 'doz' && weightUnit === 'pcs') {
-    return weight / 12;
-  }
-  if (priceUnit === 'pcs' && weightUnit === 'doz') {
-    return weight * 12;
-  }
-  // If units don't match and are not convertible, treat as 0
-  return weight;
-}
 
   function renderItemList() {
     itemList.innerHTML = '';
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
       removeSpan.onclick = () => {
         items.splice(idx, 1);
         renderItemList();
-        
+        updateTotalAndPdfButtonVisibility(); // Update total and button visibility after removal
       };
 
       li.appendChild(textSpan);
@@ -150,8 +150,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Show download PDF link only if at least one item is present
-    
+    updateTotalAndPdfButtonVisibility(); // Call this function to manage button visibility
   }
+
+  // Function to update total and PDF button visibility
+  function updateTotalAndPdfButtonVisibility() {
+    let totalINR = 0;
+    items.forEach(item => {
+      let adjustedWeight = getAdjustedWeight(item.weight, item.priceUnit, item.unit);
+      let pricePer1Unit = item.pricePerUnit / (item.unitValue || 1);
+      const itemTotal = pricePer1Unit * adjustedWeight;
+      totalINR += itemTotal;
+    });
+
+    if (items.length === 0) {
+      resultDiv.style.color = '#2c3e50';
+      resultDiv.innerHTML = `<strong>Total: ₹0.00</strong>`;
+      downloadPdfBtn.style.display = 'none'; // Hide button if no items
+      // Also remove WhatsApp button if present
+      const existingWhatsappBtn = document.getElementById('whatsappShareBtn');
+      if (existingWhatsappBtn) {
+        existingWhatsappBtn.remove();
+      }
+    } else {
+      resultDiv.style.color = '#2c3e50';
+      resultDiv.innerHTML = `<strong>Total: ₹${totalINR.toFixed(2)}</strong>`;
+      downloadPdfBtn.style.display = 'block'; // Show button if items exist
+    }
+  }
+
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -178,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    renderItemList();
+    renderItemList(); // This will now call updateTotalAndPdfButtonVisibility
 
     // Clear inputs after adding
     itemNameInput.value = '';
@@ -187,33 +214,25 @@ document.addEventListener('DOMContentLoaded', () => {
     unitSelect.value = 'kg';
     updateUnit2Options();
 
-    // Calculate total
-    let totalINR = 0;
-    items.forEach(item => {
-      let adjustedWeight = getAdjustedWeight(item.weight, item.priceUnit, item.unit);
-      let pricePer1Unit = item.pricePerUnit / (item.unitValue || 1);
-      const itemTotal = pricePer1Unit * adjustedWeight;
-      totalINR += itemTotal;
-    });
-
-    if (items.length === 0) {
-      resultDiv.style.color = '#2c3e50';
-      resultDiv.innerHTML = `<strong>Total: ₹0.00</strong>`;
-    } else {
-      resultDiv.style.color = '#2c3e50';
-      resultDiv.innerHTML = `<strong>Total: ₹${totalINR.toFixed(2)}</strong>`;
-    }
-
     // Reset unitValue to 1 after calculation
     document.getElementById('unitValue').value = 1;
-     generateAndSharePDF();
-  }); 
+    // generateAndSharePDF(); // This should be called only when the PDF button is clicked, not on every form submission.
+  });
 
+  // Add event listener for the Download PDF button
+  downloadPdfBtn.addEventListener('click', generateAndSharePDF);
+
+
+  // WhatsApp button function
   function createWhatsAppButton(pdfBlob) {
-    // Remove existing button if any
-    const oldBtn = document.getElementById('whatsappShareBtn');
-    if (oldBtn) oldBtn.remove();
-  
+    console.log("Creating WhatsApp button...");
+
+    // Remove existing button if already present
+    const existingBtn = document.getElementById('whatsappShareBtn');
+    if (existingBtn) {
+      existingBtn.remove();
+    }
+
     // Create WhatsApp share button
     const btn = document.createElement('button');
     btn.id = 'whatsappShareBtn';
@@ -229,16 +248,15 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.style.cursor = 'pointer';
     btn.style.marginTop = '12px';
     btn.title = 'Share PDF on WhatsApp';
-  
+
     // WhatsApp SVG icon
     btn.innerHTML = `
-      <svg width="28" height="28" viewBox="0 0 32 32" fill="white">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32" fill="white">
         <path d="M16.001 3.2c-7.06 0-12.8 5.74-12.8 12.8 0 2.26.6 4.47 1.74 6.41l-1.84 6.73 6.9-1.81c1.87 1.02 3.98 1.57 6.01 1.57h.01c7.06 0 12.8-5.74 12.8-12.8s-5.74-12.8-12.8-12.8zm0 23.36c-1.81 0-3.74-.48-5.36-1.38l-.38-.22-4.1 1.08 1.1-4.01-.25-.41c-1.09-1.77-1.67-3.82-1.67-5.92 0-6.02 4.9-10.92 10.92-10.92s10.92 4.9 10.92 10.92-4.9 10.92-10.92 10.92zm5.98-8.13c-.33-.17-1.95-.96-2.25-1.07-.3-.11-.52-.17-.74.17-.22.33-.85 1.07-1.04 1.29-.19.22-.38.25-.71.08-.33-.17-1.39-.51-2.65-1.62-.98-.87-1.64-1.94-1.83-2.27-.19-.33-.02-.51.14-.68.14-.14.33-.37.5-.56.17-.19.22-.33.33-.55.11-.22.06-.41-.03-.58-.09-.17-.74-1.78-1.01-2.44-.27-.65-.54-.56-.74-.57-.19-.01-.41-.01-.63-.01-.22 0-.58.08-.88.37-.3.29-1.15 1.12-1.15 2.73 0 1.61 1.18 3.17 1.34 3.39.16.22 2.33 3.57 5.65 4.87.79.34 1.41.54 1.89.69.79.25 1.51.21 2.08.13.64-.09 1.95-.8 2.23-1.57.28-.77.28-1.43.2-1.57-.08-.14-.3-.22-.63-.39z"/>
       </svg>
     `;
-  
+
     btn.onclick = async () => {
-      // Use Web Share API if available (for mobile)
       if (navigator.canShare && navigator.canShare({ files: [pdfBlob] })) {
         const file = new File([pdfBlob], 'bill.pdf', { type: 'application/pdf' });
         try {
@@ -251,31 +269,30 @@ document.addEventListener('DOMContentLoaded', () => {
           alert('Sharing cancelled or failed.');
         }
       } else {
-        // Fallback: WhatsApp Web (cannot send files directly)
         const url = 'https://wa.me/?text=My%20Bill%20PDF%20is%20ready.%20Please%20download%20from%20the%20site.';
         window.open(url, '_blank');
       }
     };
-  
+
     // Insert after resultDiv
     resultDiv.parentNode.insertBefore(btn, resultDiv.nextSibling);
   }
-  
+
   function generateAndSharePDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-  
+
     let y = 15;
     doc.setFillColor(44, 62, 80);
     doc.rect(0, 0, 210, 20, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(16);
     doc.text('My Bill Calculator', 10, y);
-  
+
     y += 12;
     doc.setFontSize(12);
     doc.setTextColor(44, 62, 80);
-  
+
     if (items.length === 0) {
       doc.text('No items added.', 10, y);
       y += 10;
@@ -288,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
       doc.text('Amount in Rupees', 150, y);
       doc.setFont(undefined, 'normal');
       y += 8;
-  
+
       items.forEach((item, idx) => {
         let pricePer1Unit = item.pricePerUnit / (item.unitValue || 1);
         let itemTotal = pricePer1Unit * item.weight;
@@ -296,20 +313,20 @@ document.addEventListener('DOMContentLoaded', () => {
         let qtyStr = `${item.weight} ${item.unit}`;
         let rateStr = `${item.pricePerUnit}/${item.unitValue} ${item.priceUnit}`;
         let amtStr = `${itemTotal.toFixed(2)}`;
-  
+
         doc.text(String(idx + 1), 10, y);
         doc.text(itemLabel, 25, y);
         doc.text(qtyStr, 90, y);
         doc.text(rateStr, 115, y);
         doc.text(amtStr, 150, y);
-  
+
         y += 8;
         if (y > 270) {
           doc.addPage();
           y = 15;
         }
       });
-  
+
       let totalINR = 0;
       items.forEach(item => {
         let pricePer1Unit = item.pricePerUnit / (item.unitValue || 1);
@@ -321,11 +338,19 @@ document.addEventListener('DOMContentLoaded', () => {
       doc.setTextColor(44, 62, 80);
       doc.text(`Total: Rupees ${totalINR.toFixed(2)}`, 115, y);
     }
-  
-    // Use callback version for jsPDF v2.x
-    doc.output('blob', function(blob) {
-      createWhatsAppButton(blob);
-    });
+
+    // This line will trigger the download directly
+    doc.save('MyBill.pdf'); // Changed from doc.output('blob') to doc.save() for direct download
+
+    // If you still want the WhatsApp button after direct download, keep this:
+    // doc.output('blob', {
+    //   callback: function(blob) {
+    //     console.log("PDF generated successfully.");
+    //     createWhatsAppButton(blob);
+    //   }
+    // });
   }
- 
+
+  // Initial call to set button visibility on page load (in case of pre-filled items, though not applicable here)
+  updateTotalAndPdfButtonVisibility();
 });
